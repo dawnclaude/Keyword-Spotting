@@ -64,7 +64,7 @@ class Trainer():
         self.tfm = self.get_tfm()
 
         self.dataloaders = {phase: DataLoader(datasets[phase], batch_size = args.batch_size, collate_fn = partial(collate_fn, args = args, labels_list = labels, transform = self.tfm[phase], feature_extractor = feature_extractor), 
-                        num_workers = 10, pin_memory = True, shuffle = True if phase == 'train' else False) for phase in phases}
+                        num_workers = 2, pin_memory = True, shuffle = True if phase == 'train' else False) for phase in phases}
 
 
         self.criterion = nn.CrossEntropyLoss(reduction = 'none')
