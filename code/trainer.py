@@ -132,12 +132,12 @@ class Trainer():
                 self.scheduler.step()
                 lr = self.scheduler.get_lr()
     
-                wandb.log({'train_step_loss': loss, 'learning_rate': lr[0]})
-            else:
-                wandb.log({'train_step_loss': loss})
+                #wandb.log({'train_step_loss': loss, 'learning_rate': lr[0]})
+            #else:
+                #wandb.log({'train_step_loss': loss})
 
-        elif phase == 'val' and self.args.mode != 'analysis':
-            wandb.log({'val_step_loss': loss})
+        #elif phase == 'val' and self.args.mode != 'analysis':
+            #wandb.log({'val_step_loss': loss})
 
     def iterate(self, epoch, phase):
 
