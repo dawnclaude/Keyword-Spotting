@@ -11,7 +11,7 @@ from torch.optim.swa_utils import AveragedModel
 from utils import collate_fn, mixup
 from tqdm import tqdm
 from functools import partial
-import wandb
+#import wandb
 import os
 from torchmetrics import F1
 from torchvision.utils import save_image
@@ -23,8 +23,8 @@ from transformers import Wav2Vec2FeatureExtractor
 class Trainer():
     def __init__(self, args, model):
 
-        if args.mode == 'train':
-            wandb.init(project = 'speech_commands', name = args.run_name)
+        #if args.mode == 'train':
+        #    wandb.init(project = 'speech_commands', name = args.run_name)
 
         self.args = args
         self.accelerator = Accelerator(fp16 = args.use_fp16)
@@ -192,8 +192,8 @@ class Trainer():
         loss_list = torch.cat(loss_list)
         top_losses, top_indices = torch.topk(loss_list, self.args.num_audio_save, largest = True)
 
-        if self.args.mode == 'train':
-            wandb.log({f'{phase}_epoch_loss': epoch_loss, f'{phase}_f1': f1_score})
+        #if self.args.mode == 'train':
+            #wandb.log({f'{phase}_epoch_loss': epoch_loss, f'{phase}_f1': f1_score})
 
         if self.args.mode ==  'train':
             if self.args.swa and phase == 'train': 
