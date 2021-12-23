@@ -3,8 +3,9 @@ from pytorch_lightning.utilities.seed import seed_everything
 from models import M5, count_parameters, ExtendedEfficientNet, Wav2Vec2ForSpeechClassification
 from trainer import Trainer, Evaluator
 from torchvision.models import resnet18
-import wandb
+#import wandb
 import torch.nn as nn
+from transformers.models.wav2vec2.configuration_wav2vec2 import Wav2Vec2Config
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -18,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", default=256, type=int, help="batch_size")
     parser.add_argument("--sample_rate", default=16000, type=int)
     parser.add_argument("--num_audio_save", default=100, type=int, help="Number of images to save of validation")
-    parser.add_argument("--lr", default=1e-4, type=float, help='learning_rate')
+    parser.add_argument("--lr", default=5e-4, type=float, help='learning_rate')
     parser.add_argument("--mode", default = 'train', help='use one among "train, test, analysis')
     parser.add_argument("--use_fp16", action = 'store_true', help='use fp16 training')
     parser.add_argument("--swa", action = 'store_true', help='use SWA for potential generalization')
@@ -39,8 +40,8 @@ if __name__ == '__main__':
     elif 'efficientnet' in args.model:
         model = ExtendedEfficientNet(args)
     else:
-        model = Wav2Vec2ForSpeechClassification.from_pretrained('facebook/wav2vec2-base-960h')
-        model.freeze_feature_extractor()   # very important to freeze the feature extractor
+        model = Wav2Vec2ForSpeechClassification(Wav2Vec2Config())
+        #model.freeze_feature_extractor()   # very important to freeze the feature extractor
 
     n = count_parameters(model)
     print("Number of parameters: %s" % n)
