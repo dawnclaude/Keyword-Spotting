@@ -19,6 +19,8 @@ from adamp import AdamP
 from audiomentations import Compose, AddGaussianNoise, TimeStretch, PitchShift, Shift
 from augmentations import FrequencyMasking, TimeMasking
 from transformers import Wav2Vec2FeatureExtractor
+from transformers.models.wav2vec2.configuration_wav2vec2 import Wav2Vec2Config
+
 
 class Trainer():
     def __init__(self, args, model):
@@ -71,10 +73,10 @@ class Trainer():
         self.optimizer = optim.Adam(self.model.parameters(), lr=args.lr)
 
 
-        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, patience = 3, factor = 0.1)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, patience = 3, factor = 0.5,verbose=True)
 
-        if args.cyclelr:
-            self.scheduler = torch.optim.lr_scheduler.CyclicLR(self.optimizer, base_lr = 1e-4, max_lr = 1e-3, step_size_up=len(self.dataloaders['train'])/2, cycle_momentum=False)
+        #if args.cyclelr:
+        #    self.scheduler = torch.optim.lr_scheduler.CyclicLR(self.optimizer, base_lr = 1e-4, max_lr = 1e-3, step_size_up=len(self.dataloaders['train'])/2, cycle_momentum=False)
 
 
         self.model, self.optimizer, self.dataloaders['train'], self.dataloaders['val'] = self.accelerator.prepare(self.model, self.optimizer, self.dataloaders['train'], self.dataloaders['val'])
@@ -143,7 +145,7 @@ class Trainer():
 
         start = time.strftime("%H:%M:%S")
         print(f"Starting epoch: {epoch} | phase: {phase} | ⏰: {start}")
-
+        
         f1_metric = F1(num_classes = 35, average = 'micro')
 
         if phase == 'train':
@@ -161,7 +163,7 @@ class Trainer():
         target_list = []
         pred_list = []
 
-        self.optimizer.zero_grad()
+        
         for itr, batch in tqdm(enumerate(dataloader), total = total_batches): 
             audio, targets = batch
 
@@ -237,7 +239,7 @@ class Evaluator(object):
 
         feature_extractor = None
         if args.model == 'wav2vec2':
-            feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained('facebook/wav2vec2-base-960h')
+            feature_extractor = Wav2Vec2FeatureExtractor(Wav2Vec2Config())
 
         self.net = model
         loaded_ckpt = torch.load(os.path.join(args.ckpt_path, args.run_name, 'best.pth'))
